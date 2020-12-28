@@ -1,0 +1,283 @@
+car_model 차종
+sharing_type:부름 / 쏘카
+age_group 연령대
+has_previous_accident 누적 사고 유무
+cumulative_use_count 누적 대여 횟수
+b2b 법인이용
+accident_ratio 과실율
+pf_type 보험료 타입 선택 (PF5, PF30, PF70)
+socarpass 쏘카패스
+socarsave 쏘카세이브
+start_hour 이용시작시간
+duration 대여기간
+accident_hour 사고시각
+repair_cost 차량수리비용
+insure_cost 보험손해비용
+accident_location 사고위치
+car_part1 전면 손상
+car_part2 후면 손상
+repair_cnt 수리 부위 갯수
+acc_type1 사고타입(전면충돌, 차대인, 자전거, 알수없음 등등)
+insurance_site_aid_YN 보험사 현장출동 유무
+police_site_aid_YN 경찰 현장출동 유무
+
+====
+
+query = """
+with acc_part as(
+select
+id,
+sum(if(a1 = 1, 1, 0)) as a1,
+sum(if(a1 = 2, 1, 0)) as a2,
+sum(if(a1 = 3, 1, 0)) as a3,
+sum(if(a1 = 4, 1, 0)) as a4,
+sum(if(a1 = 5, 1, 0)) as a5,
+sum(if(a1 = 6, 1, 0)) as a6,
+sum(if(a1 = 7, 1, 0)) as a7,
+sum(if(a1 = 8, 1, 0)) as a8,
+sum(if(a1 = 9, 1, 0)) as a9,
+sum(if(a1 = 10, 1, 0)) as a10,
+sum(if(a1 = 11, 1, 0)) as a11,
+sum(if(a1 = 12, 1, 0)) as a12,
+sum(if(a1 = 13, 1, 0)) as a13,
+sum(if(a1 = 14, 1, 0)) as a14,
+sum(if(a1 = 15, 1, 0)) as a15,
+sum(if(a1 = 16, 1, 0)) as a16,
+sum(if(a1 = 17, 1, 0)) as a17,
+sum(if(a1 = 18, 1, 0)) as a18,
+sum(if(a1 = 19, 1, 0)) as a19,
+sum(if(a1 = 20, 1, 0)) as a20,
+sum(if(a1 = 21, 1, 0)) as a21,
+sum(if(a1 = 22, 1, 0)) as a22,
+sum(if(a1 = 23, 1, 0)) as a23,
+sum(if(a1 = 24, 1, 0)) as a24,
+sum(if(a1 = 25, 1, 0)) as a25,
+sum(if(a1 = 26, 1, 0)) as a26,
+sum(if(a1 = 27, 1, 0)) as a27,
+sum(if(a1 = 28, 1, 0)) as a28,
+sum(if(a1 = 29, 1, 0)) as a29,
+sum(if(a1 = 30, 1, 0)) as a30,
+sum(if(a1 = 31, 1, 0)) as a31,
+sum(if(a1 = 32, 1, 0)) as a32,
+sum(if(a1 = 33, 1, 0)) as a33,
+sum(if(a1 = 34, 1, 0)) as a34,
+sum(if(a1 = 35, 1, 0)) as a35,
+sum(if(a1 = 36, 1, 0)) as a36,
+sum(if(a1 = 37, 1, 0)) as a37,
+sum(if(a1 = 38, 1, 0)) as a38,
+count(distinct a1) as repair_cnt
+
+from (
+select id, safe_cast(a1 as int64) as a1
+from `socar-data.tianjin_replica.car_accident_info` ca, unnest(SPLIT(ca.break_map, ',')) AS a1 WITH OFFSET
+where accidented_at >= '2018-01-01'
+)
+group by 1
+),
+
+fin as (
+select
+case when ma.id in (79545,
+109881,118307,125089,138258,139191,147766,147949,148998,150215,156729,157110,158089,161883,
+162295,162944,164126,164215,167025,167716,169711,170645,171123,177600,181936,186173,188184,191566,
+192623,195850,198219,201292,201528,203123,205505,205618,206601,207242) then 1
+else 0
+end as fraud_YN, #130598은 좀 특이케이스라 빼버리자
+
+ma.id as acc_id,
+case when ma.car_model in ('경형','소형','소형SUV') then 1
+when ma.car_model in ('준중형','준중형SUV','중형') then 2
+when ma.car_model in ('대형','승합','준대형','중형SUV') then 3
+when ma.car_model in ('수입') then 4
+when ma.car_model in ('EV','RV') then 5
+else 5
+end as car_model,
+
+-- case when sr.way2 = "왕복" then 0
+-- else 1
+-- end as sharing_type_v1, --쏘카 타다 부름 등등
+case when `socar-data`.socar_biz_udf.way_case(tr.way) = "왕복" then 0
+else 1
+end as sharing_type, --쏘카 타다 부름 등등
+
+#null-평균치로 처리
+-- case when sr.age_group like "%21%" then 1
+-- when sr.age_group like "%23%" then 2
+-- when sr.age_group like "%27%" then 3
+-- when sr.age_group like "%31%" then 4
+-- when sr.age_group like "%41%" then 5
+-- end as age_group_v1,
+#null-평균치로 처리
+case when `socar-data`.socar_biz_udf.age_group_v2(tr.age) like "%21%" then 1
+when `socar-data`.socar_biz_udf.age_group_v2(tr.age) like "%23%" then 2
+when `socar-data`.socar_biz_udf.age_group_v2(tr.age) like "%27%" then 3
+when `socar-data`.socar_biz_udf.age_group_v2(tr.age) like "%31%" then 4
+when `socar-data`.socar_biz_udf.age_group_v2(tr.age) like "%41%" then 5
+end as age_group,
+#누적 사고 유무
+if(countif(ma.id is not null) over (partition by ma.member_id order by ma.accidented_at asc rows between unbounded preceding and 1 preceding)>0,
+1, 0) as cum_acc_YN,
+
+#누적 대여횟수
+#sr.accumulate_used_count,
+-- case when sr.accumulate_used_count = 1 then 1
+-- when sr.accumulate_used_count in (2,3,4,5) then 2
+-- when sr.accumulate_used_count in (6,7,8,9,10) then 3
+-- when sr.accumulate_used_count > 10 then 4
+-- else 0
+-- end as accumulate_used_count_v1,
+case when accumulate_used_count_rn = 1 then 1
+when accumulate_used_count_rn in (2,3,4,5) then 2
+when accumulate_used_count_rn in (6,7,8,9,10) then 3
+when accumulate_used_count_rn > 10 then 4
+else 0
+end as accumulate_used_count,
+
+#법인 유무 : p가 개인 고객, c는 법인, m은 법인 구성원
+-- case when sr.member_type like "%P%" then 0
+-- when sr.member_type like "%C%" then 1
+-- when sr.member_type like "%M%" then 2
+-- when null then -1
+-- end as type_b2b_b2c_v1,
+case when mi.member_type like "%P%" then 0
+when mi.member_type like "%C%" then 1
+when mi.member_type like "%M%" then 2
+when null then -1
+end as type_b2b_b2c,
+
+ifnull(ma.accident_ratio, -1) accident_ratio,
+
+case when ma.pf_type like "%PF5%" then 1
+when ma.pf_type like "%PF30%" then 2
+when ma.pf_type like "%PF70%" then 3
+else 0
+end as pf_type,
+
+case when socarpass_yn = "Y" then 1
+when socarpass_yn = "N" then 0
+end as socarpass,
+
+case when socarsave_yn = "Y" then 1
+when socarsave_yn = "N" then 0
+end as socarsave,
+
+#ifnull(extract(hour from datetime(onboard_at,"Asia/Seoul")),-1) as start_hour,
+case when extract(hour from datetime(onboard_at,"Asia/Seoul")) in (0,1,2,3,4,21,22,23) then 1
+when extract(hour from datetime(onboard_at,"Asia/Seoul")) in (17,18,19,20) then 2
+when extract(hour from datetime(onboard_at,"Asia/Seoul")) in (5,6,7) then 3
+when extract(hour from datetime(onboard_at,"Asia/Seoul")) in (8,9,10) then 4
+when extract(hour from datetime(onboard_at,"Asia/Seoul")) in (11,12,13) then 5
+when extract(hour from datetime(onboard_at,"Asia/Seoul")) in (14,15,16) then 6
+else -1
+end as start_hour,
+
+#ifnull(datetime_diff(end_at_kst, start_at_kst, hour),-1) as initial_b_hour,
+case when datetime_diff(end_at_kst, start_at_kst, hour) in (2,3,4,5) then 1
+when datetime_diff(end_at_kst, start_at_kst, hour) in (6,7,8,9) then 2
+when datetime_diff(end_at_kst, start_at_kst, hour) >= 10 and datetime_diff(end_at_kst, start_at_kst, hour) <=36 then 3
+when datetime_diff(end_at_kst, start_at_kst, hour) > 36 then 4
+when datetime_diff(end_at_kst, start_at_kst, hour) in (0,1) then 5
+end as b_hour,
+
+#ifnull(extract(hour from ma.accidented_at),-1) as acc_hour,
+case when extract(hour from ma.accidented_at) in (0,1,2,3,4,21,22,23) then 1
+when extract(hour from ma.accidented_at) in (17,18,19,20) then 2
+when extract(hour from ma.accidented_at) in (5,6,7) then 3
+when extract(hour from ma.accidented_at) in (8,9,10) then 4
+when extract(hour from ma.accidented_at) in (11,12,13) then 5
+when extract(hour from ma.accidented_at) in (14,15,16) then 6
+else -1
+end as acc_hour,
+
+#차량 수리비 / 보험료
+ifnull(repair_cost_real_adjust,0) as repair_cost,
+
+ifnull(insure_cost,0) as insure_cost,
+
+ifnull(repair_cost_real_adjust,0) + ifnull(insure_cost,0) as total_acc_cost,
+
+#사고시 대처 유형 -- 0입고 1현장조치 2보류 3폐차 4고객입고
+case when ma.action_type is null then 5
+else safe_cast(ma.action_type as int64)
+end as action_type,
+
+#사고 장소 -- 0주차장 1일반도로 2이면도로 3고속도로 4쏘카존 5확인불가
+case when accident_locate is null then 5
+else safe_cast(accident_locate as int64)
+end as accident_locate,
+
+if(a1 = 1, 1, 0) a1, -- 앞범퍼
+if(a10 = 1, 1, 0) a10, -- 뒷범퍼
+ifnull(repair_cnt,0) repair_cnt, -- 수리 부위 수
+
+#사고 유형1 : 차대인(10) 차대차(20) 차량단독(30) 보행중(40) 자전거(50) 기타(99)
+case when acdnt_clas_cd1 = "차대차" then 1
+when acdnt_clas_cd1 = "차대인" then 2
+when acdnt_clas_cd1 = "차량단독" then 3
+when acdnt_clas_cd1 = " 차대자전거" then 4
+else 0
+end as acc_type1,
+
+#보험사 현장출동 유무
+case when site_aid_YN like "%Y%" then 1
+when site_aid_YN like "%N%" then 2
+else 0 -- 알수없음
+end as insurance_site_aid_YN,
+
+#경찰 출동 유무 : 1 미신고 / 2 신고
+case when police_rprt_cd like "%신고%" then 1
+when police_rprt_cd like "%미신고%" then 2
+else 0
+end as police_site_aid_YN,
+
+#우리차 탑승 인원
+case when oai_prsn_cnt in ("0","1","2","3","4") then safe_cast(oai_prsn_cnt as int64)
+when oai_prsn_cnt = "5 이상" then 5
+when oai_prsn_cnt = "미확인" then -1
+else -1
+end as oai_prsn_cnt,
+
+DATE(ma.created_at) created_at_date,
+case when ma.created_at >= '2020-02-01' and ma.created_at < '2020-07-15' then 1
+else 0
+end as test_set
+
+from `socar-data.socar_biz_base.mart_accident_table` ma
+left outer join `socar-data.tianjin_replica.car_accident_info` ca
+on ma.id = ca.id
+left outer join `socar-data.tianjin_replica.car_accident_insurance_axa_info` ai
+on ma.id = ai.accident_id
+left outer join acc_part
+on ma.id = acc_part.id
+-- left outer join `socar-data.soda_store.reservation` sr
+-- on ma.reservation_id = sr.reservation_id
+left outer join
+(SELECT
+*,
+row_number() over (partition by member_id order by return_at) accumulate_used_count_rn,
+datetime(ifnull(reserved_end_at,end_at),'Asia/Seoul') end_at_kst,
+datetime(start_at,"Asia/Seoul") start_at_kst
+FROM `socar-data.tianjin_replica.reservation_info`
+WHERE state = 3
+) tr
+on ma.reservation_id = tr.id
+left join `socar-data.tianjin_replica.member_info` mi
+on ma.member_id = mi.id
+
+where 1=1
+and ma.id is not null
+and ma.state != 99
+and ma.reservation_id is not null
+and ma.reservation_id != 0
+and ma.member_imaginary = 0 --일반 회원만
+and ma.member_type not in (1,2,3,4) -- 보불, 보불적발, 예약외, 쏘팸
+and ma.member_id is not null
+-- and sr.reservation_id != 0 -- 보불 미적발 제거
+and tr.id != 0 -- 보불 미적발 제거
+)
+SELECT
+*
+FROM fin
+WHERE created_at_date < '2020-07-15'
+and created_at_date >= '2018-09-01'
+"""
