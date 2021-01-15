@@ -13,11 +13,10 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 
 class SocarML:
 
-    def __init__(self, data, drop_cols=[], random_state=13):
+    def __init__(self, data, random_state=13):
         self.data = data
         self.num_attribs = ['accident_ratio', 'repair_cost', 'insure_cost', 'repair_cnt']
         self.random_state=random_state
-        self.drop_cols = drop_cols
 
     def drop_columns(self, drop_cols):
         self.drop_cols = drop_cols
