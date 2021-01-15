@@ -13,22 +13,19 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 
 class SocarML:
 
-    def __init__(self, data, scaler, sampler, n_components, drop_cols=[], random_state=13):
+    def __init__(self, data, drop_cols=[], random_state=13):
         self.data = data
         self.num_attribs = ['accident_ratio', 'repair_cost', 'insure_cost', 'repair_cnt']
         self.random_state=random_state
         self.drop_cols = drop_cols
-        self.scaler = scaler
-        self.sampler = sampler
-        self.n_components = n_components
 
-    def onehotencoding(self):
-        cat_attribs = self.data.columns.drop(['fraud_YN', 'test_set'] + self.num_attribs)
-        self.data = pd.get_dummies(self.data, columns=cat_attribs)
-
-    def drop_columns(self):
-        # print(drop_cols)
+    def drop_columns(self, drop_cols):
+        self.drop_cols = drop_cols
         self.data = self.data.drop(self.drop_cols, axis=1)
+
+    def one_hot_encoding(self):
+        cat_attribs = self.data.columns.drop(['fraud_YN', 'test_set'] + [attrib for attrib in self.num_attribs if attrib not in self.drop_cols])
+        self.data = pd.get_dummies(self.data, columns=cat_attribs)
 
     def split_dataset(self):
         self.train_data = self.data[self.data.test_set == 0].drop(['test_set'], axis=1)
@@ -42,25 +39,25 @@ class SocarML:
         self.X_test = self.test_data.drop('fraud_YN', axis=1)
         self.y_test = self.test_data.fraud_YN
 
-    def scaling(self):
+    def scaling(self, scaler):
         self.num_attribs = [attrib for attrib in self.num_attribs if attrib not in self.drop_cols]
-        scaler_obj = self.scaler()
+        scaler_obj = scaler()
         scaler_obj.fit(self.X_train[self.num_attribs])
 
         for dataset in [self.X_train, self.X_val, self.X_test]:
             dataset[self.num_attribs] = scaler_obj.transform(dataset[self.num_attribs])
 
-    def sampling(self):
-        spl = self.sampler(random_state=self.random_state)
+    def sampling(self, sampler):
+        spl = sampler(random_state=self.random_state)
         self.X_train, self.y_train = spl.fit_sample(self.X_train, self.y_train)  
 
-    def pca(self):       
-        self.X_train, pca_n = self.get_pca_data(self.X_train)
-        self.X_val, pca_n = self.get_pca_data(self.X_val)
-        self.X_test, pca_n = self.get_pca_data(self.X_test)
+    def pca(self, n_components):       
+        self.X_train, pca_n = self.get_pca_data(self.X_train, n_components)
+        self.X_val, pca_n = self.get_pca_data(self.X_val, n_components)
+        self.X_test, pca_n = self.get_pca_data(self.X_test, n_components)
 
-    def get_pca_data(self, data):
-        pca = PCA(n_components=self.n_components, random_state=self.random_state)
+    def get_pca_data(self, data, n_components):
+        pca = PCA(n_components=n_components, random_state=self.random_state)
         pca.fit(data)
 
         return pca.transform(data), pca
