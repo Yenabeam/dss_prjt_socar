@@ -1,4 +1,5 @@
 # 쏘카 보험 사기 탐지 머신러닝 프로젝트
+![image](https://user-images.githubusercontent.com/72847093/104838734-3476b900-5900-11eb-9428-96d19d7840d8.png)
 
 ## 개요 
 
