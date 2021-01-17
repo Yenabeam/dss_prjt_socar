@@ -3,14 +3,15 @@
 ## 개요 
 
 ### 1.1  프로젝트 주제
-- 쏘카 보험 사기건을 머신러닝을 통해 분석하고 예측하고자 합니다.?
+- 보험금을 목적으로 한 사기 집단의 렌터카를 이용한 사기 수법이 기승함. 
+- 이에 쏘카의 사고 데이터를 통해 Fraud 유저에 대한 예측을 실현하고자 함 
 
 ### 1.2 프로젝트 진행순서
-1. EDA를 통해 데이터를 관찰?
-2. 데이터 전처리?
-3. 다양한 모델들을 적용?
-4. 성능 분석 비교?
-5. 모듈화?
+1. DATA SET 
+2. EDA 
+3. 데이터 전처리 및 가공 
+4. 모델 학습/성능 평가 
+5. 결론 
  
 ### 1.3 시작에 앞서
 - 본 프로젝트를 진행하기 위해서는 __Python 3__ 이상의 버젼과 다음의 설치가 필요합니다.
@@ -27,7 +28,7 @@ pip install sweetviz
 pip install statsmodels
 ```
 
-## 전처리
+## Setting 
 
 ### 1.1 환경설정
 ```python3
@@ -114,6 +115,7 @@ sns.countplot('fraud_YN', data=socar_df)
 plt.title("Fraud Distributions \n", fontsize=14)
 plt.show()
 ```
+???????????????????????????????????????????????????????
 <img src="https://user-images.githubusercontent.com/71831714/104717802-3b20f700-576d-11eb-9e68-13a5fbfa24ff.png"></img>
 
 #### 2) 컬럼별 분포도 확인
@@ -207,6 +209,50 @@ def make_graph(column):
 make_graph('accident_hour')
 ```
 <img src="https://user-images.githubusercontent.com/71831714/104718424-33158700-576e-11eb-83f4-57562b70928a.png"></img>
+
+## Preprocessing 
+### 스케일링 
+- standard scailing 
+- log scailing 
+- minmax scailing 
+- robust scailing 
+
+### 샘플링
+imbalanced data 처리를 위한 다양한 샘플링 기법 시도 
+- random under 
+- random over 
+- smote
+- adasyn 
+- smotenn
+
+### PCA
+- 차원 축소 기법을 통한 데이터 노이즈 제거 
+
+### 원핫인코딩 
+- 적용안함 
+- 일부 카테고리 변수 
+- 모든 카테고리 변수 
+
+### 결측치처리 / 이상치 제거 
+- 평균값/중앙값/최빈값/KNN imputer 를 활용한 결측치 보간 진행 
+
+## 하이퍼파라미터 튜닝 
+### 모델별 최적성능을 위해 아래와 같이 파라미터 튜닝 작업을 시도 
+
+## Modeling  
+### 모델 학습 
+- logistic regression
+- decision tree
+- random forest 
+- lgbm
+- svm 
+
+## Model evaluation 
+### 모델 성능 평가 (metrics)
+- 정확도와 재현률을 기준으로 성능 평가 진행 
+
+## Conclusion
+- 
 
 ## 함께한 분석가 :thumbsup:
   
