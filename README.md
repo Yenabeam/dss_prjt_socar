@@ -24,14 +24,14 @@
 
 ### 2.3 데이터 노이즈
 - 데이터의 상세 값을 확인 시 ‘알수없음’, ‘확인불가’에 대한 내용이 확인되어 데이터를 잘 표현하는 주성분으로 차원을 축소를 시도함 
-
-![image](https://user-images.githubusercontent.com/72847093/105628651-73b58480-5e81-11eb-8a31-21743cc7b33f.png)
+![image](https://user-images.githubusercontent.com/72847093/105631271-0d386280-5e91-11eb-84aa-aae4594e8f38.png)![image](https://user-images.githubusercontent.com/72847093/105628651-73b58480-5e81-11eb-8a31-21743cc7b33f.png)
 
 
 ## 3. 성능 평가 
 - Recall, accuracy 를 주요 성능 평가 지표 
 - 본 모델을 통한 기업 영업 손실 방지를 목적으로, 실제 사기 집단의 예측을 목적으로 하여, Recall 수치를 성능 평가 기준으로 삼기로 하였음 
 - 모델이 모든 예측 값을 사기 집단으로 판단하는 것을 방지하고자 accuracy를 참고 성능 평가 요소로 확인하였음 
+- Best#2 모델의 경우 최종 정확도 0.5 / 재현률 0.57의 성능을 확
 
 ## 4. 구조  
 ![image](https://user-images.githubusercontent.com/72847093/105631057-cd24b000-5e8f-11eb-87dd-c3b79e3e277e.png)
