@@ -1,4 +1,5 @@
 # 쏘카 보험 사기 탐지 머신러닝 프로젝트
+###### 발표자료 URL : https://github.com/Yenabeam/dss_prjt_socar/raw/master/PPTPrjt_ML_socar_YENAJEON_%EC%B5%9C%EC%A2%85.pdf
 ![image](https://user-images.githubusercontent.com/72847093/104838734-3476b900-5900-11eb-9428-96d19d7840d8.png)
 
 ## 1. 개요 
@@ -58,3 +59,5 @@ http://www.webmail.databaser.net/moniwiki/pds/DataAnalysis/mining_process_01.pdf
   
 - 전예나 : EDA 진행, 다양한 샘플링 적용을 통한 모델링, 결측치 처리, 발표 진행 및 PPT/리드미 작성 
   - GitHub: https://github.com/Yenabeam
+
+###### 본 프로젝트는 패스트캠퍼스 데이터사이언스 취업스쿨 15th 머신러닝 프로젝트로 진행되었습니다.
