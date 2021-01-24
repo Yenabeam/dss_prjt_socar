@@ -1,5 +1,5 @@
 # 쏘카 보험 사기 탐지 머신러닝 프로젝트
-###### 발표자료 URL : https://github.com/Yenabeam/dss_prjt_socar/raw/master/PPTPrjt_ML_socar_YENAJEON_%EC%B5%9C%EC%A2%85.pdf
+###### 발표자료 URL : https://github.com/Yenabeam/dss_prjt_socar/raw/master/PPTPrjt_ML_socar_YENAJEON_%EC%B5%9C%EC%A2%85_%EB%A7%88%EC%8A%A4%ED%82%B9.pdf
 ![image](https://user-images.githubusercontent.com/72847093/104838734-3476b900-5900-11eb-9428-96d19d7840d8.png)
 
 ## 1. 개요 
